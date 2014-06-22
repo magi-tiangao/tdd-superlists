@@ -5,8 +5,11 @@ from selenium.webdriver.common.keys import Keys
 
 class NewVisitorTest(LiveServerTestCase):
 
+    def start_chrome(self):
+        return webdriver.Chrome('/Users/bowenfeng/dev/chromedriver')
+
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        self.browser = self.start_chrome()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
@@ -59,7 +62,7 @@ class NewVisitorTest(LiveServerTestCase):
         ## We use a new browser session to make sure that no information
         ## of Edith's is coming through from cookies etc
         self.browser.quit()
-        self.browser = webdriver.Firefox()
+        self.browser = self.start_chrome()
 
         # Francis visits the home page. There is no sign of Edith's list
         self.browser.get(self.live_server_url)
@@ -84,3 +87,26 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Buy milk', page_text)
 
         # Satisfied, they both go back to sleep
+
+    def test_layout_and_styling(self):
+        # Edith goes to the home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # She notices that input box is nicely centered
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
+        # She starts a new list and sees the input is nicely
+        # centered there too
+        inputbox.send_keys('testing\n')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )

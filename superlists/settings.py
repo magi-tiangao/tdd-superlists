@@ -24,7 +24,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = ['magi-test1.cloudapp.net']
+ALLOWED_HOSTS = ['superlists-staging.anytask.io']
 
 
 # Application definition

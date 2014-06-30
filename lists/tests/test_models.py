@@ -3,7 +3,7 @@ from django.test import TestCase
 from ..models import Item, List
 
 
-class ListAndItemModelTest(TestCase):
+class ItemModelTest(TestCase):
 
     def test_default_text(self):
         item = Item()

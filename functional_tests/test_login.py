@@ -3,10 +3,12 @@ from .base import FunctionalTest
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-class LoginTest(FunctionalTest):
+TEST_EMAIL_GMAIL = 'superlists.magitests@gmail.com'
+TEST_EMAIL_MOCKMYID = 'superlists.magitests@mockmyid.com'
+TEST_EMAIL = TEST_EMAIL_MOCKMYID
 
-    TEST_EMAIL_GMAIL = 'superlists.magitests@gmail.com'
-    TEST_EMAIL_MOCKMYID = 'superlists.magitests@mockmyid.com'
+
+class LoginTest(FunctionalTest):
 
     def test_login_with_persona(self):
         # Edith goes to the awesome superlists site
@@ -18,26 +20,26 @@ class LoginTest(FunctionalTest):
         self.switch_to_new_window('Mozilla Persona')
 
         # Edith logs in with her email address
-        self.sign_in_mockmyid()
+        self.sign_in_persona()
 
         # The Persona window closes
         self.switch_to_new_window('To-Do')
 
         # She can see that she is logged in
-        self.wait_to_be_logged_in()
+        self.wait_to_be_logged_in(TEST_EMAIL)
 
         # Refreshing the page, she sees it's a real session Login,
         # not just a one-off for that page
         self.browser.refresh()
-        self.wait_to_be_logged_in()
+        self.wait_to_be_logged_in(TEST_EMAIL)
 
         # Terrified of this new feature, she reflexively clicks "logout"
         self.browser.find_element_by_id('id_logout').click()
-        self.wait_to_be_logged_out()
+        self.wait_to_be_logged_out(TEST_EMAIL)
 
         # The "Logged out" status also persists after a refresh
         self.browser.refresh()
-        self.wait_to_be_logged_out()
+        self.wait_to_be_logged_out(TEST_EMAIL)
 
     def switch_to_new_window(self, text_in_title):
         retries = 60
@@ -50,35 +52,14 @@ class LoginTest(FunctionalTest):
             time.sleep(0.5)
         self.fail('could not find window')
 
-    def wait_for_element_with_id(self, element_id):
-        WebDriverWait(self.browser, timeout=30).until(
-            lambda b: b.find_element_by_id(element_id),
-            'Could not find element with id {}. Page text was {}'.format(
-                element_id, self.browser.find_element_by_tag_name('body').text
-            )
-        )
-
-    def wait_for_element_by_css_selector(self, selector):
-        WebDriverWait(self.browser, timeout=30).until(
-            lambda b: b.find_element_by_css_selector(selector),
-            'Could not find element with selector {}. Page text was {}'.format(
-                selector, self.browser.find_element_by_tag_name('body').text
-            )
-        )
-
-    def wait_to_be_logged_in(self):
-        self.wait_for_element_with_id('id_logout')
-        navbar = self.browser.find_element_by_css_selector('.navbar')
-        self.assertIn(self.test_email, navbar.text)
-
-    def wait_to_be_logged_out(self):
-        self.wait_for_element_with_id('id_login')
-        navbar = self.browser.find_element_by_css_selector('.navbar')
-        self.assertNotIn(self.test_email, navbar.text)
+    def sign_in_persona(self):
+        if TEST_EMAIL == TEST_EMAIL_MOCKMYID:
+            self.sign_in_mockmyid()
+        else:
+            self.sign_in_google()
 
     def sign_in_google(self):
         ## Use Gmail for the test email
-        self.test_email = self.TEST_EMAIL_GMAIL
         self.provide_email_to_persona_sign_in_page()
 
         #self.switch_to_new_window('Google')
@@ -90,14 +71,14 @@ class LoginTest(FunctionalTest):
 
     def sign_in_mockmyid(self):
         ## Use mockmyid.com for test email
-        self.test_email = self.TEST_EMAIL_MOCKMYID
         self.provide_email_to_persona_sign_in_page()
 
     def provide_email_to_persona_sign_in_page(self):
         self.browser.find_element_by_id('authentication_email'
-        ).send_keys(self.test_email)
+        ).send_keys(TEST_EMAIL)
 
         ## Find the button shows for desktop version
-        self.wait_for_element_by_css_selector('button.isDesktop')
+        #self.wait_for_element_by_css_selector('button.isDesktop')
+        time.sleep(1)
         self.browser.find_element_by_css_selector('button.isDesktop').click()
 

@@ -6,7 +6,7 @@ def _get_base_folder(host):
 
 
 def _get_manage_dot_py(host):
-    return '{path}/vertualenv/bin/python {path}/source/manage.py'.format(
+    return '{path}/virtualenv/bin/python {path}/source/manage.py'.format(
         path=_get_base_folder(host)
     )
 
@@ -17,8 +17,8 @@ def reset_database():
     ))
 
 
-def create_session_on_server(email)
-    session_key = run('{manage_py} create_sessoin {email}'.format(
+def create_session_on_server(email):
+    session_key = run('{manage_py} create_session {email}'.format(
         manage_py=_get_manage_dot_py(env.host),
         email=email,
     ))

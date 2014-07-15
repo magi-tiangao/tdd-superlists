@@ -1,4 +1,5 @@
 from django.conf import settings
+import time
 from .base import FunctionalTest
 from .server_tools import create_session_on_server
 from .management.commands.create_session import create_pre_authenticated_session
@@ -47,7 +48,7 @@ class MyListsTest(FunctionalTest):
 
         # She sees that her list is in there, named according to its
         # first list item
-        self.browser.find_element_by_link_text('Recticulate splines').click()
+        self.browser.find_element_by_link_text('Reticulate splines').click()
         self.assertEqual(self.browser.current_url, first_list_url)
 
         # She decides to start another list, just to see
@@ -63,6 +64,6 @@ class MyListsTest(FunctionalTest):
         # She logs out. The "My lists" option disappears
         self.browser.find_element_by_id('id_logout').click()
         self.assertEqual(
-            self.browser.find_element_by_link_text('My lists'),
+            self.browser.find_elements_by_link_text('My lists'),
             []
         )

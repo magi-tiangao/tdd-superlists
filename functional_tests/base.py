@@ -1,4 +1,5 @@
 from os import environ
+import os
 import sys
 from django.contrib.staticfiles.testing import StaticLiveServerCase
 from selenium import webdriver
@@ -28,10 +29,7 @@ class FunctionalTest(StaticLiveServerCase):
     def setUp(self):
         if self.against_staging:
             reset_database(self.server_host)
-        if environ['SUPERLISTS_FT_USE_CHROME'] == '1':
-            self.browser = self.start_chrome()
-        else:
-            self.browser = webdriver.Firefox()
+        self.browser = self.start_browser_based_on_env()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
@@ -39,6 +37,14 @@ class FunctionalTest(StaticLiveServerCase):
 
     def start_chrome(self):
         return webdriver.Chrome('/Users/bowenfeng/dev/chromedriver')
+
+    def get_browser_choice_from_env(self):
+        return 'chrome' if os.getenv('SUPERLISTS_FT_USE_CHROME', '0') == '1' else 'firefox'
+
+    def start_browser_based_on_env(self):
+        if self.get_browser_choice_from_env() == 'chrome':
+            return self.start_chrome()
+        return webdriver.Firefox()
 
     def check_for_row_in_list_table(self, row_text):
         table = self.browser.find_element_by_id('id_list_table')

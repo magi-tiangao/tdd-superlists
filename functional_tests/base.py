@@ -1,3 +1,4 @@
+from os import environ
 import sys
 from django.contrib.staticfiles.testing import StaticLiveServerCase
 from selenium import webdriver
@@ -27,7 +28,10 @@ class FunctionalTest(StaticLiveServerCase):
     def setUp(self):
         if self.against_staging:
             reset_database(self.server_host)
-        self.browser = self.start_chrome()
+        if environ['SUPERLISTS_FT_USE_CHROME'] == '1':
+            self.browser = self.start_chrome()
+        else:
+            self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
